@@ -14,6 +14,7 @@ class MascotaVacunaController extends Controller
      */
     public function index(Mascota $mascota)
     {
+        return view('mascotas.vacunas.index', compact('mascota'));
     }
 
     /**
@@ -21,6 +22,8 @@ class MascotaVacunaController extends Controller
      */
     public function create(Mascota $mascota)
     {
+        $vacunas = Vacuna::orderBy('nombre')->get();
+        return view('mascotas.vacunas.create', compact('mascota', 'vacunas'));
     }
 
     /**
@@ -28,6 +31,8 @@ class MascotaVacunaController extends Controller
      */
     public function store(Request $request, Mascota $mascota)
     {
+        $mascota->vacunas()->attach($request->vacuna_id, ['fecha_aplicacion' => $request->fecha_aplicacion]);
+        return redirect(route('mascotas.vacunas.index', ['mascota' => $mascota]));
     }
 
     /**
@@ -59,5 +64,7 @@ class MascotaVacunaController extends Controller
      */
     public function destroy(Mascota $mascota, Vacuna $vacuna)
     {
+        $mascota->vacunas()->detach($vacuna);
+        return redirect(route('mascotas.vacunas.index', ['mascota' => $mascota]));
     }
 }
